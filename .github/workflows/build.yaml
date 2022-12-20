@@ -1,0 +1,38 @@
+name: Build
+
+on:
+  push:
+    tags:
+      - '**'
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        version: [22.03.2]
+        target: [ipq40xx/generic, mediatek/mt7622, ramips/mt7620, ramips/mt7621, ramips/mt76x8, x86/64]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - run: ./openwrt-${{ matrix.version }}-fullcone.sh ${{ matrix.target }}
+      - id: rename-target
+        run: echo "name=${{ matrix.target }}" | tr / _ >> $GITHUB_OUTPUT
+      - run: |
+          cd openwrt-${{ matrix.version }}
+          cp bin/packages/*/base/firewall4*.ipk \
+            bin/packages/*/base/libnftnl*.ipk \
+            bin/packages/*/base/nftables*.ipk \
+            bin/targets/*/*/packages/kmod-nft-fullcone*.ipk \
+            ..
+          cd ..
+          NAME=nft-fullcone-${{ matrix.version }}-${{ steps.rename-target.outputs.name }}.tar
+          tar --owner=0 --group=0 --numeric-owner -H v7 -cf ${NAME} *.ipk
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ntf-fullcone-pkgs-${{ matrix.version }}-${{ steps.rename-target.outputs.name }}
+          path: '*.ipk'
+      - uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: '*.tar'
