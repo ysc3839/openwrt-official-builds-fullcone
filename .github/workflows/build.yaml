@@ -23,6 +23,7 @@ jobs:
           cp bin/packages/*/base/firewall4*.ipk \
             bin/packages/*/base/libnftnl*.ipk \
             bin/packages/*/base/nftables*.ipk \
+            bin/packages/*/luci/luci-app-firewall*.ipk \
             bin/targets/*/*/packages/kmod-nft-fullcone*.ipk \
             ..
           cd ..

@@ -1,0 +1,28 @@
+diff --git a/applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js b/applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js
+index 58cd2a7c1e..0db01c6ae5 100644
+--- a/applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js
++++ b/applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js
+@@ -57,6 +57,10 @@ return view.extend({
+ 
+ 		o = s.option(form.Flag, 'drop_invalid', _('Drop invalid packets'));
+ 
++		if (L.hasSystemFeature('firewall4')) {
++			o = s.option(form.Flag, 'fullcone', _('Full-cone NAT'));
++		}
++
+ 		var p = [
+ 			s.option(form.ListValue, 'input', _('Input')),
+ 			s.option(form.ListValue, 'output', _('Output')),
+@@ -296,6 +300,12 @@ return view.extend({
+ 				uci.unset('firewall', section_id, 'extra');
+ 				uci.set('firewall', section_id, 'extra_dest', value);
+ 			};
++		} else {
++			o = s.taboption('advanced', form.Flag, 'fullcone4', _('IPv4 Full-cone NAT'));
++			o.modalonly = true;
++
++			o = s.taboption('advanced', form.Flag, 'fullcone6', _('IPv6 Full-cone NAT'));
++			o.modalonly = true;
+ 		}
+ 
+ 		o = s.taboption('general', form.DummyValue, '_forwardinfo');

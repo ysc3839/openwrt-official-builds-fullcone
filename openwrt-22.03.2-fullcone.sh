@@ -38,6 +38,9 @@ wget -O - ${TARGET_URL}/${LLVM_FILE} | tar --xz -xf -
 git apply ../openwrt-${OPENWRT_VER}-fullcone.patch
 
 ./scripts/feeds update -a
+
+git -C feeds/luci apply "$(realpath -- ../luci-app-firewall-fullcone.patch)"
+
 ./scripts/feeds install -a
 
 wget -O .config ${TARGET_URL}/config.buildinfo
@@ -63,3 +66,4 @@ make package/nft-fullcone/compile -j$(nproc)
 make package/libnftnl/compile -j$(nproc)
 make package/nftables/compile -j$(nproc)
 make package/firewall4/compile -j$(nproc)
+make package/luci-app-firewall/compile -j$(nproc)
